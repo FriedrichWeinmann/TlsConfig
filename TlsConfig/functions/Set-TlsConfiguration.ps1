@@ -1,0 +1,120 @@
+﻿function Set-TlsConfiguration {
+    [CmdletBinding()]
+    Param (
+        [Parameter(ValueFromPipeline = $true)]
+        [PSFComputer[]]
+        $ComputerName = $env:COMPUTERNAME,
+
+        [ValidateSet('TLS1_2Client', 'TLS1_2Server', 'StrongCrypto_35', 'StrongCrypto_45', 'StrongCrypto_x86_35', 'StrongCrypto_x86_45', 'DES_56_56', 'RC2_128_128', 'RC2_40_128', 'RC2_56_128', 'RC4_128_128', 'RC4_40_128', 'RC4_56_128', 'RC4_64_128', 'SSL3Client', 'SSL3Server', 'TLS1_0Client', 'TLS1_0Server', 'TLS1_1Client', 'TLS1_1Server', 'SSL2Client', 'SSL2Server')]
+        [string[]]
+        $Enable,
+
+        [ValidateSet('TLS1_2Client', 'TLS1_2Server', 'StrongCrypto_35', 'StrongCrypto_45', 'StrongCrypto_x86_35', 'StrongCrypto_x86_45', 'DES_56_56', 'RC2_128_128', 'RC2_40_128', 'RC2_56_128', 'RC4_128_128', 'RC4_40_128', 'RC4_56_128', 'RC4_64_128', 'SSL3Client', 'SSL3Server', 'TLS1_0Client', 'TLS1_0Server', 'TLS1_1Client', 'TLS1_1Server', 'SSL2Client', 'SSL2Server')]
+        [string[]]
+        $Disable,
+
+        [switch]
+        $EnableSecure,
+
+        [switch]
+        $DisableSecure,
+
+        [switch]
+        $EnableInsecure,
+
+        [switch]
+        $DisableInsecure
+    )
+	
+    begin {
+        #region Remote Scriptblock
+        $setCode = {
+            param (
+                $Parameters
+            )
+
+            #region Locations
+            $registryLocations = @(
+                @{ Name = 'SSL2Client'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Client' }
+                @{ Name = 'SSL2Server'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 2.0\Server' }
+                @{ Name = 'SSL3Client'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Client' }
+                @{ Name = 'SSL3Server'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\SSL 3.0\Server' }
+                @{ Name = 'TLS1_0Client'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client' }
+                @{ Name = 'TLS1_0Server'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server' }
+                @{ Name = 'TLS1_1Client'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client' }
+                @{ Name = 'TLS1_1Server'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server' }
+                @{ Name = 'TLS1_2Client'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client' }
+                @{ Name = 'TLS1_2Server'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server' }
+                @{ Name = 'RC2_40_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC2 40/128' }
+                @{ Name = 'RC2_56_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC2 56/128' }
+                @{ Name = 'RC2_128_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC2 128/128' }
+                @{ Name = 'RC4_40_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 40/128' }
+                @{ Name = 'RC4_56_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 56/128' }
+                @{ Name = 'RC4_64_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 64/128' }
+                @{ Name = 'RC4_128_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 128/128' }
+                @{ Name = 'DES_56_56'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\DES 56/56' }
+                @{ Name = 'StrongCrypto_35'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Microsoft.NETFramework\v2.0.50727'; NullIsDisabled = $true }
+                @{ Name = 'StrongCrypto_45'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Microsoft.NETFramework\v4.0.30319'; NullIsDisabled = $true }
+                @{ Name = 'StrongCrypto_x86_35'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft.NETFramework\v2.0.50727'; NullIsDisabled = $true }
+                @{ Name = 'StrongCrypto_x86_45'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft.NETFramework\v4.0.30319'; NullIsDisabled = $true }
+            )
+            #endregion Locations
+
+            #region Enable Protocols
+            $toEnable = @()
+            foreach ($protocol in $Parameters.Enable) {
+                $toEnable += $protocol
+            }
+            if ($Parameters.EnableSecure) {
+                $toEnable += $Parameters.SecureOptions
+            }
+            if ($Parameters.EnableInsecure) {
+                $toEnable += $Parameters.InsecureOptions
+            }
+
+            foreach ($protocol in $toEnable) {
+                $location = $registryLocations | Where-Object { $_.Name -eq $protocol }
+
+                if (-not (Test-Path -Path $location.Key)) {
+                    $null = New-Item -Path $location.Key -Force
+                }
+
+                Set-ItemProperty -Path $location.Key -Name $location.Property -Value 1
+            }
+            #endregion Enable Protocols
+
+            #region Disable Protocols
+            $toDisnable = @()
+            foreach ($protocol in $Parameters.Disable) {
+                $toDisnable += $protocol
+            }
+            if ($Parameters.DisableSecure) {
+                $toDisnable += $Parameters.SecureOptions
+            }
+            if ($Parameters.DisableInsecure) {
+                $toDisnable += $Parameters.InsecureOptions
+            }
+
+            foreach ($protocol in $toDisnable) {
+                $location = $registryLocations | Where-Object { $_.Name -eq $protocol }
+
+                if (-not (Test-Path -Path $location.Key)) {
+                    $null = New-Item -Path $location.Key -Force
+                }
+
+                Set-ItemProperty -Path $location.Key -Name $location.Property -Value 0
+            }
+            #endregion Disable Protocols
+        }
+        #region Remote Scriptblock
+        
+        $parameters = $PSBoundParameters | ConvertTo-PSFHashtable -Include Enable, Disable, EnableSecure, DisableSecure, EnableInsecure, DisableInsecure
+        $parameters += @{
+            SecureOptions   = 'TLS1_2Client', 'TLS1_2Server', 'StrongCrypto_35', 'StrongCrypto_45', 'StrongCrypto_x86_35', 'StrongCrypto_x86_45'
+            InsecureOptions = 'DES_56_56', 'RC2_128_128', 'RC2_40_128', 'RC2_56_128', 'RC4_128_128', 'RC4_40_128', 'RC4_56_128', 'RC4_64_128', 'SSL3Client', 'SSL3Server', 'TLS1_0Client', 'TLS1_0Server', 'TLS1_1Client', 'TLS1_1Server', 'SSL2Client', 'SSL2Server'
+        }
+    }
+    process {
+        Invoke-PSFCommand -ComputerName $ComputerName -ScriptBlock $setCode -ArgumentList $parameters
+    }
+}

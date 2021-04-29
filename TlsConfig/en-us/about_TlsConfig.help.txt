@@ -1,0 +1,11 @@
+﻿TOPIC
+	about_TlsConfig
+	
+SHORT DESCRIPTION
+	Explains how to use the TlsConfig powershell module
+	
+LONG DESCRIPTION
+	<Insert Content here>
+
+KEYWORDS
+	TlsConfig
