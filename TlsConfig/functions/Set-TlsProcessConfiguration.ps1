@@ -58,12 +58,6 @@
         $DefaultConnectionLimit,
 
         [System.Int32]
-        $DefaultNonPersistentConnectionLimit,
-
-        [System.Int32]
-        $DefaultPersistentConnectionLimit,
-
-        [System.Int32]
         $DnsRefreshTimeout,
 
         [System.Boolean]
@@ -94,8 +88,12 @@
         $UseNagleAlgorithm
     )
 
+    begin {
+        $commonParam = 'Verbose','Debug','ErrorAction','WarningAction','InformationAction','ErrorVariable','WarningVariable','InformationVariable','OutVariable','OutBuffer','PipelineVariable','Confirm','WhatIf'
+    }
     process {
         foreach ($parameter in $PSBoundParameters.GetEnumerator()) {
+            if ($parameter.Key -in $commonParam) { continue }
             switch ($parameter.Key) {
                 'AddSecurityProtocol' { [System.Net.ServicePointManager]::SecurityProtocol += $parameter.Value }
                 'RemoveSecurityProtocol' { [System.Net.ServicePointManager]::SecurityProtocol -= $parameter.Value }
