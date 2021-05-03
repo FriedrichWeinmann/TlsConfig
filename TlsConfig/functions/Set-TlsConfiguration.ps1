@@ -1,4 +1,57 @@
 ﻿function Set-TlsConfiguration {
+    <#
+    .SYNOPSIS
+        Change the allowed ssl/tls protocols and cipher suites.
+    
+    .DESCRIPTION
+        Change the allowed ssl/tls protocols and cipher suites.
+        Note: Most changes require a restart of the target computer.
+        
+    .PARAMETER ComputerName
+        The computer to process.
+        Defaults to localhost.
+    
+    .PARAMETER Enable
+        Which protocol/cipher suite to enable.
+    
+    .PARAMETER Disable
+        Which protocol/cipher suite to disable.
+    
+    .PARAMETER EnableSecure
+        Enable all protocols considered secure.
+        - Configures .NET to use strong cryptography by default.
+        - Enables TLS1.2
+    
+    .PARAMETER DisableSecure
+        Disable all protocols considered secure.
+        - Configures .NET to NOT use strong cryptography by default.
+        - Disables TLS1.2
+        Why the heck would you do this?!
+    
+    .PARAMETER EnableInsecure
+        Enable all protocols and cipher suites considered insecure.
+        - Enables SSL2.0 & 3.0
+        - Enables TLS1.0 & 1.1
+        - Enables RC2 / RC4 / DES
+        Only use this if you need to temporarily roll back after all.
+    
+    .PARAMETER DisableInsecure
+        Disable all protocols and cipher suites considered insecure.
+        - Disables SSL2.0 & 3.0
+        - Disables TLS1.0 & 1.1
+        - Disables RC2 / RC4 / DES
+        Yehaw!
+    
+    .EXAMPLE
+        PS C:\> Set-TlsConfiguration -EnableSecure -DisableInsecure
+
+        Secures the allowed network protocols on the local computer.
+
+    .EXAMPLE
+        PS C:\> Set-TlsConfiguration -EnableSecure -DisableInsecure -ComputerName (Get-ADComputer -Filter *)
+
+        Secures all computers in the entire active directory domain.
+    #>
     [CmdletBinding()]
     Param (
         [Parameter(ValueFromPipeline = $true)]
@@ -45,18 +98,18 @@
                 @{ Name = 'TLS1_1Server'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server' }
                 @{ Name = 'TLS1_2Client'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client' }
                 @{ Name = 'TLS1_2Server'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server' }
-                @{ Name = 'RC2_40_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC2 40/128' }
-                @{ Name = 'RC2_56_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC2 56/128' }
-                @{ Name = 'RC2_128_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC2 128/128' }
-                @{ Name = 'RC4_40_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 40/128' }
-                @{ Name = 'RC4_56_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 56/128' }
-                @{ Name = 'RC4_64_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 64/128' }
-                @{ Name = 'RC4_128_128'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 128/128' }
-                @{ Name = 'DES_56_56'; Property = 'Enabled'; Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\DES 56/56' }
-                @{ Name = 'StrongCrypto_35'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Microsoft.NETFramework\v2.0.50727'; NullIsDisabled = $true }
-                @{ Name = 'StrongCrypto_45'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Microsoft.NETFramework\v4.0.30319'; NullIsDisabled = $true }
-                @{ Name = 'StrongCrypto_x86_35'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft.NETFramework\v2.0.50727'; NullIsDisabled = $true }
-                @{ Name = 'StrongCrypto_x86_45'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft.NETFramework\v4.0.30319'; NullIsDisabled = $true }
+                @{ Name = 'RC2_40_128'; Property = 'Enabled'; Key = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC2 40$([char]0x2215)128" }
+                @{ Name = 'RC2_56_128'; Property = 'Enabled'; Key = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC2 56$([char]0x2215)128" }
+                @{ Name = 'RC2_128_128'; Property = 'Enabled'; Key = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC2 128$([char]0x2215)128" }
+                @{ Name = 'RC4_40_128'; Property = 'Enabled'; Key = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 40$([char]0x2215)128" }
+                @{ Name = 'RC4_56_128'; Property = 'Enabled'; Key = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 56$([char]0x2215)128" }
+                @{ Name = 'RC4_64_128'; Property = 'Enabled'; Key = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 64$([char]0x2215)128" }
+                @{ Name = 'RC4_128_128'; Property = 'Enabled'; Key = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\RC4 128$([char]0x2215)128" }
+                @{ Name = 'DES_56_56'; Property = 'Enabled'; Key = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Ciphers\DES 56$([char]0x2215)56" }
+                @{ Name = 'StrongCrypto_35'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v2.0.50727'; NullIsDisabled = $true }
+                @{ Name = 'StrongCrypto_45'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319'; NullIsDisabled = $true }
+                @{ Name = 'StrongCrypto_x86_35'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v2.0.50727'; NullIsDisabled = $true }
+                @{ Name = 'StrongCrypto_x86_45'; Property = 'SchUseStrongCrypto'; Key = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319'; NullIsDisabled = $true }
             )
             #endregion Locations
 
@@ -84,18 +137,18 @@
             #endregion Enable Protocols
 
             #region Disable Protocols
-            $toDisnable = @()
+            $toDisable = @()
             foreach ($protocol in $Parameters.Disable) {
-                $toDisnable += $protocol
+                $toDisable += $protocol
             }
             if ($Parameters.DisableSecure) {
-                $toDisnable += $Parameters.SecureOptions
+                $toDisable += $Parameters.SecureOptions
             }
             if ($Parameters.DisableInsecure) {
-                $toDisnable += $Parameters.InsecureOptions
+                $toDisable += $Parameters.InsecureOptions
             }
 
-            foreach ($protocol in $toDisnable) {
+            foreach ($protocol in $toDisable) {
                 $location = $registryLocations | Where-Object { $_.Name -eq $protocol }
 
                 if (-not (Test-Path -Path $location.Key)) {

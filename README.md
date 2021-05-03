@@ -1,31 +1,50 @@
-﻿# Description
+﻿# TlsConfig
 
-Insert a useful description for the TlsConfig project here.
+Module to manage your TLS configuration, by managing both security protocols and cipher suites used.
 
-Remember, it's the first thing a visitor will see.
+## Install
 
-# Project Setup Instructions
-## Working with the layout
+To install the module, run:
 
-- Don't touch the psm1 file
-- Place functions you export in `functions/` (can have subfolders)
-- Place private/internal functions invisible to the user in `internal/functions` (can have subfolders)
-- Don't add code directly to the `postimport.ps1` or `preimport.ps1`.
-  Those files are designed to import other files only.
-- When adding files & folders, make sure they are covered by either `postimport.ps1` or `preimport.ps1`.
-  This adds them to both the import and the build sequence.
+```powershell
+Install-Module TlsConfig
+```
 
-## Setting up CI/CD
+## Use
 
-> To create a PR validation pipeline, set up tasks like this:
+### Read Configuration
 
-- Install Prerequisites (PowerShell Task; VSTS-Prerequisites.ps1)
-- Validate (PowerShell Task; VSTS-Validate.ps1)
-- Publish Test Results (Publish Test Results; NUnit format; Run no matter what)
+```powershell
+# Get configuration of current computer
+Get-TlsConfiguration
 
-> To create a build/publish pipeline, set up tasks like this:
+# Get configuration of ALL domain computers
+Get-TlsConfiguration -ComputerName (Get-ADComputer -Filter *)
+```
 
-- Install Prerequisites (PowerShell Task; VSTS-Prerequisites.ps1)
-- Validate (PowerShell Task; VSTS-Validate.ps1)
-- Build (PowerShell Task; VSTS-Build.ps1)
-- Publish Test Results (Publish Test Results; NUnit format; Run no matter what)
+### Write Configuration
+
+```powershell
+# Enable secure protocols without disabling insecure protocols
+Set-TlsConfiguration -EnableSecure
+
+# Enable secure protocols and disable insecure protocols on server1
+Set-TlsConfiguration -ComputerName 'server1.contoso.com' -EnableSecure -DisableInsecure
+
+# Enable the strong cryptography settings on all computers in the domain
+Set-TlsConfiguration -ComputerName (Get-ADComputer -Filter *) -Enable StrongCrypto_35,StrongCrypto_45,StrongCrypto_x86_35,StrongCrypto_x86_45
+```
+
+### Read Current Process configuration
+
+```powershell
+# Get the settings of the current process
+Get-TlsProcessConfiguration
+```
+
+### Write Current Process configuration
+
+```powershell
+# Add Tls12 to the protocols supported by the current session
+Set-TlsProcessConfiguration -AddSecurityProtocol Tls12
+```

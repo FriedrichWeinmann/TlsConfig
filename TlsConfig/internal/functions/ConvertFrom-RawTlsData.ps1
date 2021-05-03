@@ -1,4 +1,19 @@
 ﻿function ConvertFrom-RawTlsData {
+    <#
+    .SYNOPSIS
+        Converts raw tls information objects into structured, processed data.
+    
+    .DESCRIPTION
+        Converts raw tls information objects into structured, processed data.
+    
+    .PARAMETER InputObject
+        The TLS configuration object returned from the remote hosts.
+    
+    .EXAMPLE
+        PS C:\> $data | ConvertFrom-RawTlsData
+
+        Converts raw tls information objects into structured, processed data.
+    #>
     [CmdletBinding()]
     param (
         [Parameter(ValueFromPipeline = $true)]
