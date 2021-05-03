@@ -41,17 +41,11 @@
 	# Functions to export from this module
 	FunctionsToExport = @(
         'Get-TlsConfiguration'
+        'Get-TlsProcessConfiguration'
         'Set-TlsConfiguration'
+        'Set-TlsProcessConfiguration'
+        'Test-TlsProtocol'
     )
-	
-	# Cmdlets to export from this module
-	CmdletsToExport = ''
-	
-	# Variables to export from this module
-	VariablesToExport = ''
-	
-	# Aliases to export from this module
-	AliasesToExport = ''
 	
 	# List of all modules packaged with this module
 	ModuleList = @()
@@ -66,19 +60,19 @@
 		PSData = @{
 			
 			# Tags applied to this module. These help with module discovery in online galleries.
-			# Tags = @()
+			Tags = @('Tls')
 			
 			# A URL to the license for this module.
-			# LicenseUri = ''
+			LicenseUri = 'https://github.com/FriedrichWeinmann/TlsConfig/blob/master/LICENSE'
 			
 			# A URL to the main website for this project.
-			# ProjectUri = ''
+			ProjectUri = 'https://github.com/FriedrichWeinmann/TlsConfig'
 			
 			# A URL to an icon representing this module.
 			# IconUri = ''
 			
 			# ReleaseNotes of this module
-			# ReleaseNotes = ''
+			ReleaseNotes = 'https://github.com/FriedrichWeinmann/TlsConfig/blob/master/TlsConfig/changelog.md'
 			
 		} # End of PSData hashtable
 		
