@@ -1,4 +1,29 @@
 ﻿function Get-TlsConfiguration {
+    <#
+    .SYNOPSIS
+        Read the actually deployed TLS configuration from the registry of the target host.
+    
+    .DESCRIPTION
+        Read the actually deployed TLS configuration from the registry of the target host.
+        Specifically returns information on:
+        - Strong Crypto enabled in .NET
+        - TLS 1.0/1.1/1.2 Enabled registry keys
+        - SSL 2.0/3.0 Enabled registry keys
+        - RC2/RC4/DES Cypher Suites
+    
+    .PARAMETER ComputerName
+        The computers to scan
+    
+    .EXAMPLE
+        PS C:\> Get-TlsConfiguration
+
+        Read the actually deployed TLS configuration from the registry of the local computer.
+
+    .EXAMPLE
+        PS C:\> Get-TlsConfiguration -ComputerName (Get-ADComputer -Filter *)
+
+        Read the actually deployed TLS configuration for every single computer in the current domain.
+    #>
     [CmdletBinding()]
     Param (
         [Parameter(ValueFromPipeline = $true)]

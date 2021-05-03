@@ -7,41 +7,41 @@
         Configure local process network tls settings.
         This specifically allows you to define allowed TLS protocols, override certificate validation, port reuse and all the other myriad of settings supported by .NET.
     
-    .PARAMETER CheckCertificateRevocationList	
+    .PARAMETER CheckCertificateRevocationList
     	Sets a Boolean value that indicates whether the certificate is checked against the certificate authority revocation list.
 
-    .PARAMETER DefaultConnectionLimit	
+    .PARAMETER DefaultConnectionLimit
     	Sets the maximum number of concurrent connections allowed by a ServicePoint object.
 
-    .PARAMETER DnsRefreshTimeout	
+    .PARAMETER DnsRefreshTimeout
     	Sets a value that indicates how long a Domain Name Service (DNS) resolution is considered valid.
 
-    .PARAMETER EnableDnsRoundRobin	
+    .PARAMETER EnableDnsRoundRobin
     	Sets a value that indicates whether a Domain Name Service (DNS) resolution rotates among the applicable Internet Protocol (IP) addresses.
 
-    .PARAMETER Expect100Continue	
+    .PARAMETER Expect100Continue
     	Sets a Boolean value that determines whether 100-Continue behavior is used.
 
-    .PARAMETER MaxServicePointIdleTime	
+    .PARAMETER MaxServicePointIdleTime
     	Sets the maximum idle time of a ServicePoint object.
 
-    .PARAMETER MaxServicePoints	
+    .PARAMETER MaxServicePoints
     	Sets the maximum number of ServicePoint objects to maintain at any time.
 
-    .PARAMETER ReusePort	
+    .PARAMETER ReusePort
     	Setting this property value to true causes all outbound TCP connections from HttpWebRequest to use the native socket option SO_REUSE_UNICASTPORT on the socket. This causes the underlying outgoing ports to be shared. This is useful for scenarios where a large number of outgoing connections are made in a short time, and the app risks running out of ports.
 
-    .PARAMETER AddSecurityProtocol	
+    .PARAMETER AddSecurityProtocol
     	Adds a security protocol used by the ServicePoint objects managed by the ServicePointManager object.
 
     .PARAMETER RemoveSecurityProtocol
         Removes a security protocol used by the ServicePoint objects managed by the ServicePointManager object.
 
-    .PARAMETER ServerCertificateValidationCallback	
+    .PARAMETER ServerCertificateValidationCallback
     	Set the validation logic used to validate certificates in https connections.
         Set it to { $true } to disable validation.
 
-    .PARAMETER UseNagleAlgorithm	
+    .PARAMETER UseNagleAlgorithm
     	Determines whether the Nagle algorithm is used by the service points managed by this ServicePointManager object.
 
     .EXAMPLE

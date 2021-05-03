@@ -47,8 +47,7 @@
                     try { $tcpClient.Connect($computer, $Port) }
                     catch {
                         $tcpClient.Dispose()
-                        Write-Warning "[$computer] Error connecting: $($_.Exception.GetBaseException().Message)"
-                        Write-Error $_
+                        Write-PSFMessage -Level Error -String 'Test-TlsProtocol.Tcp.Failed' -StringValues $computer, $port, $_.Exception.GetBaseException().Message -ErrorRecord $_ -OverrideExceptionMessage -EnableException $true
                         if ($_.Exception.InnerException.SocketErrorCode -eq 'HostNotFound') { continue main }
                         continue
                     }

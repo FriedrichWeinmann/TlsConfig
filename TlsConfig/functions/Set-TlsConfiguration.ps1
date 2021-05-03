@@ -1,4 +1,57 @@
 ﻿function Set-TlsConfiguration {
+    <#
+    .SYNOPSIS
+        Change the allowed ssl/tls protocols and cipher suites.
+    
+    .DESCRIPTION
+        Change the allowed ssl/tls protocols and cipher suites.
+        Note: Most changes require a restart of the target computer.
+        
+    .PARAMETER ComputerName
+        The computer to process.
+        Defaults to localhost.
+    
+    .PARAMETER Enable
+        Which protocol/cipher suite to enable.
+    
+    .PARAMETER Disable
+        Which protocol/cipher suite to disable.
+    
+    .PARAMETER EnableSecure
+        Enable all protocols considered secure.
+        - Configures .NET to use strong cryptography by default.
+        - Enables TLS1.2
+    
+    .PARAMETER DisableSecure
+        Disable all protocols considered secure.
+        - Configures .NET to NOT use strong cryptography by default.
+        - Disables TLS1.2
+        Why the heck would you do this?!
+    
+    .PARAMETER EnableInsecure
+        Enable all protocols and cipher suites considered insecure.
+        - Enables SSL2.0 & 3.0
+        - Enables TLS1.0 & 1.1
+        - Enables RC2 / RC4 / DES
+        Only use this if you need to temporarily roll back after all.
+    
+    .PARAMETER DisableInsecure
+        Disable all protocols and cipher suites considered insecure.
+        - Disables SSL2.0 & 3.0
+        - Disables TLS1.0 & 1.1
+        - Disables RC2 / RC4 / DES
+        Yehaw!
+    
+    .EXAMPLE
+        PS C:\> Set-TlsConfiguration -EnableSecure -DisableInsecure
+
+        Secures the allowed network protocols on the local computer.
+
+    .EXAMPLE
+        PS C:\> Set-TlsConfiguration -EnableSecure -DisableInsecure -ComputerName (Get-ADComputer -Filter *)
+
+        Secures all computers in the entire active directory domain.
+    #>
     [CmdletBinding()]
     Param (
         [Parameter(ValueFromPipeline = $true)]
